@@ -1,0 +1,1070 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Explorateur Interactif C#</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Fira+Code:wght@400;500&display=swap');
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+            /* Slate 50 */
+            color: #334155;
+            /* Slate 700 */
+        }
+
+        .font-mono {
+            font-family: 'Fira Code', monospace;
+        }
+
+        /* Chart Container Styling - Strict adherence to requirements */
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+
+        /* Code highlight transition */
+        .code-line {
+            transition: background-color 0.3s ease, color 0.3s ease;
+            padding: 0 4px;
+            border-radius: 4px;
+            display: block;
+        }
+
+        .code-active {
+            background-color: #d8b4fe;
+            /* Violet-300 */
+            color: #4c1d95;
+            /* Violet-900 */
+            font-weight: 600;
+        }
+
+        /* Custom Scrollbar for code blocks */
+        .custom-scroll::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        .custom-scroll::-webkit-scrollbar-track {
+            background: #1e293b;
+        }
+
+        .custom-scroll::-webkit-scrollbar-thumb {
+            background: #475569;
+            border-radius: 4px;
+        }
+
+        .nav-item.active {
+            background-color: #7c3aed;
+            /* Violet 600 */
+            color: white;
+        }
+    </style>
+</head>
+
+<body class="flex flex-col md:flex-row min-h-screen">
+
+    <!-- Overlay pour mobile -->
+    <div id="menu-overlay" onclick="toggleMenu()"></div>
+
+    <!-- Barre de navigation mobile (Header) -->
+    <header class="md:hidden bg-slate-900 text-white p-4 flex justify-between items-center sticky top-0 z-50">
+        <h1 class="font-bold text-lg">C# <span class="text-violet-400">Explorer</span></h1>
+        <button onclick="toggleMenu()" class="p-2 bg-slate-800 rounded-md focus:outline-none">
+            <span id="menu-icon" class="text-2xl font-mono">☰</span>
+        </button>
+    </header>
+
+    <!-- Sidebar Navigation -->
+    <nav id="sidebar" style="height: auto;"
+        class="fixed inset-y-0 left-0 w-64 bg-slate-900 text-slate-300 z-40 transform -translate-x-full md:translate-x-0 md:static md:h-screen flex flex-col shadow-2xl md:shadow-none">
+        <div class="p-6 border-b border-slate-800 hidden md:block">
+            <h1 class="text-2xl font-bold text-white tracking-tight">C# <span class="text-violet-400">Mastery</span>
+            </h1>
+        </div>
+
+        <ul class="flex-1 py-4 space-y-1">
+            <li><button onclick="showSection('intro')"
+                    class="nav-item w-full text-left px-6 py-4 hover:bg-slate-800 transition-colors active">1.
+                    Principes</button></li>
+            <li><button onclick="showSection('types')"
+                    class="nav-item w-full text-left px-6 py-4 hover:bg-slate-800 transition-colors">2. Système de
+                    Types</button></li>
+            <li><button onclick="showSection('operators')"
+                    class="nav-item w-full text-left px-6 py-4 hover:bg-slate-800 transition-colors">3.
+                    Opérateurs</button></li>
+            <li><button onclick="showSection('logic')"
+                    class="nav-item w-full text-left px-6 py-4 hover:bg-slate-800 transition-colors">4. Logique</button>
+            </li>
+            <li><button onclick="showSection('loops')"
+                    class="nav-item w-full text-left px-6 py-4 hover:bg-slate-800 transition-colors">5. Boucles
+                    (Simulation)</button></li>
+
+        </ul>
+
+        <div class="p-4 border-t border-slate-800 text-xs text-center text-slate-500">
+            <p>&copy; 2026 SASSI Saïd.
+                Autorisé sous licence
+                <a href="https://www.apache.org/licenses/LICENSE-2.0" target="_blank" rel="noopener noreferrer">
+                    Apache License 2.0
+                </a>.
+            </p>
+        </div>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 p-4 md:p-10 lg:p-16 w-full overflow-x-hidden">
+
+        <!-- SECTION 1: PRINCIPES -->
+        <section id="intro" class="section-content animate-fade-in block">
+            <header class="mb-10 border-b border-slate-200 pb-6">
+                <h2 class="text-3xl md:text-4xl font-bold text-slate-800 mb-4">Principes Fondamentaux du C#</h2>
+                <p class="text-lg text-slate-600 max-w-3xl leading-relaxed">
+                    Bienvenue dans cet explorateur interactif. Le C# est un langage puissant conçu pour la robustesse et
+                    la productivité.
+                    Cette section vous présente les quatre piliers conceptuels qui définissent sa structure.
+                    Survolez les cartes ci-dessous pour découvrir les détails techniques.
+                </p>
+            </header>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Card 1 -->
+                <div
+                    class="group bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 border border-slate-100 overflow-hidden">
+                    <div class="bg-violet-100 p-4 border-b border-violet-200">
+                        <h3 class="font-bold text-violet-900 flex items-center">
+                            <span class="text-2xl mr-2">📦</span> Orienté Objet (POO)
+                        </h3>
+                    </div>
+                    <div class="p-6">
+                        <p class="text-slate-600 mb-4">Tout en C# est organisé autour de classes et d'objets. C'est le
+                            paradigme central.</p>
+                        <div
+                            class="h-0 group-hover:h-auto overflow-hidden transition-all duration-500 opacity-0 group-hover:opacity-100 text-sm bg-slate-50 p-3 rounded text-slate-500 border border-slate-200">
+                            Encourage la modularité et la réutilisation du code via l'encapsulation, l'héritage et le
+                            polymorphisme.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 2 -->
+                <div
+                    class="group bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 border border-slate-100 overflow-hidden">
+                    <div class="bg-emerald-100 p-4 border-b border-emerald-200">
+                        <h3 class="font-bold text-emerald-900 flex items-center">
+                            <span class="text-2xl mr-2">🛡️</span> Sécurité des Types
+                        </h3>
+                    </div>
+                    <div class="p-6">
+                        <p class="text-slate-600 mb-4">Le compilateur ("Type Safety") empêche les opérations
+                            incompatibles.</p>
+                        <div
+                            class="h-0 group-hover:h-auto overflow-hidden transition-all duration-500 opacity-0 group-hover:opacity-100 text-sm bg-slate-50 p-3 rounded text-slate-500 border border-slate-200">
+                            Exemple : Vous ne pouvez pas stocker du texte ("Bonjour") dans une variable conçue pour un
+                            nombre entier (int). Cela élimine de nombreux bugs avant même l'exécution.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 3 -->
+                <div
+                    class="group bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 border border-slate-100 overflow-hidden">
+                    <div class="bg-amber-100 p-4 border-b border-amber-200">
+                        <h3 class="font-bold text-amber-900 flex items-center">
+                            <span class="text-2xl mr-2">♻️</span> Gestion Mémoire (GC)
+                        </h3>
+                    </div>
+                    <div class="p-6">
+                        <p class="text-slate-600 mb-4">Le Garbage Collector nettoie automatiquement la mémoire.</p>
+                        <div
+                            class="h-0 group-hover:h-auto overflow-hidden transition-all duration-500 opacity-0 group-hover:opacity-100 text-sm bg-slate-50 p-3 rounded text-slate-500 border border-slate-200">
+                            Vous n'avez pas besoin de libérer manuellement la mémoire (comme en C++ avec `delete`). Le
+                            GC détecte les objets orphelins et récupère l'espace.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 4 -->
+                <div
+                    class="group bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 border border-slate-100 overflow-hidden">
+                    <div class="bg-blue-100 p-4 border-b border-blue-200">
+                        <h3 class="font-bold text-blue-900 flex items-center">
+                            <span class="text-2xl mr-2">📝</span> Syntaxe C-Style
+                        </h3>
+                    </div>
+                    <div class="p-6">
+                        <p class="text-slate-600 mb-4">Une syntaxe familière, héritée du C et du C++.</p>
+                        <ul
+                            class="h-0 group-hover:h-auto overflow-hidden transition-all duration-500 opacity-0 group-hover:opacity-100 text-sm list-disc pl-5 text-slate-500 bg-slate-50 p-3 rounded border border-slate-200">
+                            <li><strong>;</strong> fin d'instruction</li>
+                            <li><strong>{ }</strong> blocs de code</li>
+                            <li>Sensible à la casse (majuscules ≠ minuscules)</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 2: TYPES -->
+        <section id="types" class="section-content hidden">
+            <header class="mb-10 border-b border-slate-200 pb-6">
+                <h2 class="text-3xl md:text-4xl font-bold text-slate-800 mb-4">Le Système de Types</h2>
+                <p class="text-lg text-slate-600 max-w-3xl">
+                    Comprendre comment C# stocke les données est crucial pour la performance.
+                    Explorez ci-dessous la différence fondamentale entre les types stockés sur la <strong>Pile
+                        (Stack)</strong> et ceux sur le <strong>Tas (Heap)</strong>, ainsi que la taille des types
+                    numériques.
+                </p>
+            </header>
+
+            <div class="flex flex-col xl:flex-row gap-8">
+                <!-- Column 1: Comparison & Interaction -->
+                <div class="flex-1 space-y-8">
+
+                    <!-- Interactive Toggle -->
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                        <div class="flex space-x-4 mb-6">
+                            <button onclick="toggleTypeInfo('value')" id="btn-value"
+                                class="flex-1 py-3 px-4 rounded-lg bg-violet-600 text-white font-semibold shadow-md transition-all">Types
+                                Valeur</button>
+                            <button onclick="toggleTypeInfo('reference')" id="btn-reference"
+                                class="flex-1 py-3 px-4 rounded-lg bg-slate-100 text-slate-600 font-semibold hover:bg-slate-200 transition-all">Types
+                                Référence</button>
+                        </div>
+
+                        <div id="info-value" class="block animate-fade-in">
+                            <div class="flex items-start mb-4">
+                                <div class="bg-orange-100 text-orange-600 p-2 rounded mr-3 mt-1">⚡</div>
+                                <div>
+                                    <h4 class="font-bold text-lg">Stockage sur la Pile (Stack)</h4>
+                                    <p class="text-sm text-slate-600">Rapide, taille fixe. Contient la donnée
+                                        directement.</p>
+                                </div>
+                            </div>
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-sm text-left text-slate-600">
+                                    <thead class="text-xs text-slate-700 uppercase bg-slate-50">
+                                        <tr>
+                                            <th class="px-4 py-2">Type</th>
+                                            <th class="px-4 py-2">Description</th>
+                                            <th class="px-4 py-2">Exemple</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-slate-100">
+                                        <tr>
+                                            <td class="px-4 py-2 font-mono text-violet-600">int</td>
+                                            <td>Entier signé (32 bits)</td>
+                                            <td class="font-mono bg-slate-50 rounded px-1">25</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="px-4 py-2 font-mono text-violet-600">long</td>
+                                            <td>Entier 64 bits</td>
+                                            <td class="font-mono bg-slate-50 rounded px-1">900000L</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="px-4 py-2 font-mono text-violet-600">double</td>
+                                            <td>Flottant (précision double)</td>
+                                            <td class="font-mono bg-slate-50 rounded px-1">3.14</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="px-4 py-2 font-mono text-violet-600">bool</td>
+                                            <td>Logique</td>
+                                            <td class="font-mono bg-slate-50 rounded px-1">true</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="px-4 py-2 font-mono text-violet-600">char</td>
+                                            <td>Caractère Unicode</td>
+                                            <td class="font-mono bg-slate-50 rounded px-1">'A'</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div id="info-reference" class="hidden animate-fade-in">
+                            <div class="flex items-start mb-4">
+                                <div class="bg-blue-100 text-blue-600 p-2 rounded mr-3 mt-1">🌐</div>
+                                <div>
+                                    <h4 class="font-bold text-lg">Stockage sur le Tas (Heap)</h4>
+                                    <p class="text-sm text-slate-600">Dynamique. La variable contient une
+                                        <em>adresse</em> (référence) vers la donnée réelle.
+                                    </p>
+                                </div>
+                            </div>
+                            <ul class="space-y-3">
+                                <li
+                                    class="bg-slate-50 p-3 rounded border border-slate-100 flex flex-col sm:flex-row sm:items-center gap-2">
+                                    <span
+                                        class="font-mono text-violet-600 bg-white px-2 py-1 rounded border border-slate-200">string</span>
+                                    <span class="text-sm text-slate-600">Chaîne de caractères. Ex: "Bonjour"</span>
+                                </li>
+                                <li
+                                    class="bg-slate-50 p-3 rounded border border-slate-100 flex flex-col sm:flex-row sm:items-center gap-2">
+                                    <span
+                                        class="font-mono text-violet-600 bg-white px-2 py-1 rounded border border-slate-200">array</span>
+                                    <span class="text-sm text-slate-600">Tableaux. Ex: int[] notes</span>
+                                </li>
+                                <li
+                                    class="bg-slate-50 p-3 rounded border border-slate-100 flex flex-col sm:flex-row sm:items-center gap-2">
+                                    <span
+                                        class="font-mono text-violet-600 bg-white px-2 py-1 rounded border border-slate-200">class</span>
+                                    <span class="text-sm text-slate-600">Objets personnalisés. Ex: new Personne()</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Column 2: Visualization -->
+                <div class="flex-1">
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                        <h3 class="font-bold text-slate-800 mb-4">Taille des Types Numériques (Bits)</h3>
+                        <p class="text-sm text-slate-500 mb-6">
+                            Visualisation de l'espace mémoire requis. `decimal` est le plus lourd (haute précision),
+                            tandis que `int` est léger.
+                        </p>
+                        <!-- Chart Container -->
+                        <div class="chart-container">
+                            <canvas id="typesChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 3: LOGIC (Conditionnelles) -->
+        <section id="logic" class="section-content hidden">
+            <header class="mb-10 border-b border-slate-200 pb-6">
+                <h2 class="text-3xl md:text-4xl font-bold text-slate-800 mb-4">Laboratoire de Logique</h2>
+                <p class="text-lg text-slate-600 max-w-3xl">
+                    Testez les structures conditionnelles <code>if/else</code> et <code>switch</code> en direct.
+                    Modifiez les variables à gauche pour voir quel chemin le code emprunte à droite.
+                </p>
+            </header>
+
+            <!-- Interactive Tab: If/Else vs Switch -->
+            <div class="mb-6">
+                <div class="inline-flex rounded-md shadow-sm" role="group">
+                    <button onclick="switchLogicTab('if')" id="tab-if"
+                        class="px-4 py-2 text-sm font-medium text-white bg-violet-600 border border-violet-600 rounded-l-lg hover:bg-violet-700">IF
+                        / ELSE</button>
+                    <button onclick="switchLogicTab('switch')" id="tab-switch"
+                        class="px-4 py-2 text-sm font-medium text-slate-700 bg-white border border-slate-300 rounded-r-lg hover:bg-violet-700">SWITCH</button>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- IF/ELSE PLAYGROUND -->
+                <div id="playground-if" class="contents">
+                    <!-- Controls -->
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                        <label class="block text-sm font-medium text-slate-700 mb-2">Entrez un score (0-100)</label>
+                        <div class="flex items-center gap-4">
+                            <input type="number" id="input-score" value="85" min="0" max="100"
+                                class="block w-full rounded-md border-slate-300 shadow-sm focus:border-violet-500 focus:ring-violet-500 sm:text-sm p-2 border"
+                                placeholder="score..." oninput="updateIfLogic()">
+                            <span id="score-feedback" class="text-2xl font-bold text-violet-600">B</span>
+                        </div>
+                        <p class="mt-4 text-sm text-slate-500">Changez le score pour voir le code réagir.</p>
+                    </div>
+
+                    <!-- Code Visualizer -->
+                    <div class="bg-slate-900 rounded-xl shadow-lg p-6 overflow-hidden relative">
+                        <div class="absolute top-0 left-0 w-full h-8 bg-slate-800 flex items-center px-4">
+                            <div class="flex space-x-2">
+                                <div class="w-3 h-3 rounded-full bg-red-500"></div>
+                                <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
+                                <div class="w-3 h-3 rounded-full bg-green-500"></div>
+                            </div>
+                        </div>
+                        <div
+                            class="mt-6 font-mono text-sm md:text-base text-slate-300 space-y-1 custom-scroll overflow-x-auto">
+                            <div class="code-line opacity-50">// Vérification du score</div>
+                            <div class="code-line" id="line-if-1"><span class="text-violet-400">int</span> score = <span
+                                    id="code-score-val" class="text-emerald-400">85</span>;</div>
+                            <br>
+                            <div class="code-line" id="line-if-2"><span class="text-pink-400">if</span> (score >= 90) {
+                            </div>
+                            <div class="code-line pl-4" id="line-if-3">System.Console.WriteLine(<span
+                                    class="text-amber-300">"Excellent !"</span>);</div>
+                            <div class="code-line" id="line-if-4">} <span class="text-pink-400">else if</span> (score >=
+                                70) {</div>
+                            <div class="code-line pl-4" id="line-if-5">System.Console.WriteLine(<span
+                                    class="text-amber-300">"Bien joué !"</span>);</div>
+                            <div class="code-line" id="line-if-6">} <span class="text-pink-400">else</span> {</div>
+                            <div class="code-line pl-4" id="line-if-7">System.Console.WriteLine(<span
+                                    class="text-amber-300">"À améliorer."</span>);</div>
+                            <div class="code-line" id="line-if-8">}</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SWITCH PLAYGROUND -->
+                <div id="playground-switch" class="contents hidden">
+                    <!-- Controls -->
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                        <label class="block text-sm font-medium text-slate-700 mb-2">Sélectionnez un Rôle</label>
+                        <select id="input-role" title="Sélectionnez un rôle"
+                            class="block w-full rounded-md border-slate-300 shadow-sm focus:border-violet-500 focus:ring-violet-500 sm:text-sm p-2 border"
+                            onchange="updateSwitchLogic()">
+                            <option value="Admin">Admin</option>
+                            <option value="User">User</option>
+                            <option value="Guest">Guest (Inconnu)</option>
+                        </select>
+                        <p class="mt-4 text-sm text-slate-500">Le `switch` saute directement au `case` correspondant.
+                        </p>
+                    </div>
+
+                    <!-- Code Visualizer -->
+                    <div class="bg-slate-900 rounded-xl shadow-lg p-6 overflow-hidden relative">
+                        <div class="absolute top-0 left-0 w-full h-8 bg-slate-800 flex items-center px-4">
+                            <div class="flex space-x-2">
+                                <div class="w-3 h-3 rounded-full bg-red-500"></div>
+                                <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
+                                <div class="w-3 h-3 rounded-full bg-green-500"></div>
+                            </div>
+                        </div>
+                        <div
+                            class="mt-6 font-mono text-sm md:text-base text-slate-300 space-y-1 custom-scroll overflow-x-auto">
+                            <div class="code-line" id="line-sw-1"><span class="text-violet-400">string</span> role =
+                                <span id="code-role-val" class="text-emerald-400">"Admin"</span>;
+                            </div>
+                            <br>
+                            <div class="code-line" id="line-sw-2"><span class="text-pink-400">switch</span> (role) {
+                            </div>
+                            <div class="code-line pl-4" id="line-sw-3"><span class="text-pink-400">case</span> <span
+                                    class="text-amber-300">"Admin"</span>:</div>
+                            <div class="code-line pl-8" id="line-sw-4">GrantFullAccess();</div>
+                            <div class="code-line pl-8" id="line-sw-5"><span class="text-pink-400">break</span>;</div>
+
+                            <div class="code-line pl-4" id="line-sw-6"><span class="text-pink-400">case</span> <span
+                                    class="text-amber-300">"User"</span>:</div>
+                            <div class="code-line pl-8" id="line-sw-7">GrantLimitedAccess();</div>
+                            <div class="code-line pl-8" id="line-sw-8"><span class="text-pink-400">break</span>;</div>
+
+                            <div class="code-line pl-4" id="line-sw-9"><span class="text-pink-400">default</span>:</div>
+                            <div class="code-line pl-8" id="line-sw-10">DenyAccess();</div>
+                            <div class="code-line pl-8" id="line-sw-11"><span class="text-pink-400">break</span>;</div>
+                            <div class="code-line" id="line-sw-12">}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 4: LOOPS -->
+        <section id="loops" class="section-content hidden">
+            <header class="mb-8 border-b border-slate-200 pb-6">
+                <h2 class="text-3xl font-bold text-slate-800 mb-2">Simulateur de Boucles</h2>
+                <p class="text-slate-600">Choisissez une structure pour observer son comportement pas à pas. La
+                    surbrillance indique l'instruction en cours d'exécution.</p>
+            </header>
+
+            <!-- Loop Selection Tabs -->
+            <div class="flex flex-wrap gap-2 mb-8">
+                <button onclick="selectLoopType('for')" id="btn-for"
+                    class="loop-tab px-4 py-2 rounded-full border-2 border-violet-600 bg-violet-600 text-white font-semibold transition-all">for</button>
+                <button onclick="selectLoopType('while')" id="btn-while"
+                    class="loop-tab px-4 py-2 rounded-full border-2 border-slate-200 bg-white text-slate-600 font-semibold hover:border-violet-300 transition-all">while</button>
+                <button onclick="selectLoopType('dowhile')" id="btn-dowhile"
+                    class="loop-tab px-4 py-2 rounded-full border-2 border-slate-200 bg-white text-slate-600 font-semibold hover:border-violet-300 transition-all">do-while</button>
+                <button onclick="selectLoopType('foreach')" id="btn-foreach"
+                    class="loop-tab px-4 py-2 rounded-full border-2 border-slate-200 bg-white text-slate-600 font-semibold hover:border-violet-300 transition-all">foreach</button>
+            </div>
+
+            <div class="grid grid-cols-1 xl:grid-cols-12 gap-8">
+                <!-- Control Panel -->
+                <div class="xl:col-span-4 space-y-6">
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+                        <div class="mb-6">
+                            <span class="text-xs font-bold text-slate-400 uppercase tracking-widest">État de la
+                                Variable</span>
+                            <div class="flex items-baseline gap-2 mt-1">
+                                <span class="text-4xl font-mono font-bold text-violet-600" id="loop-var-name">i</span>
+                                <span class="text-2xl text-slate-300 font-mono">=</span>
+                                <span class="text-4xl font-mono font-bold text-slate-800" id="loop-var-value">0</span>
+                            </div>
+                        </div>
+
+                        <div class="mb-6">
+                            <span class="text-xs font-bold text-slate-400 uppercase tracking-widest">Condition de
+                                Sortie</span>
+                            <div id="loop-condition-box"
+                                class="mt-2 py-2 px-4 rounded-lg bg-emerald-50 text-emerald-700 font-bold text-center border border-emerald-100">
+                                TRUE (Continué)
+                            </div>
+                        </div>
+
+                        <div class="flex flex-col gap-3">
+                            <button onclick="executeLoopStep()"
+                                class="w-full bg-violet-600 hover:bg-violet-700 text-white py-3 rounded-xl font-bold shadow-lg shadow-violet-200 transition-all transform active:scale-95">
+                                PAS SUIVANT ▶
+                            </button>
+                            <button onclick="resetLoopSimulation()"
+                                class="w-full bg-slate-100 hover:bg-slate-200 text-slate-600 py-2 rounded-xl font-semibold transition-all">
+                                RÉINITIALISER ↺
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="bg-violet-900 text-violet-100 p-5 rounded-2xl">
+                        <h4 class="font-bold mb-2 flex items-center">
+                            <span class="mr-2">💡</span> Le Saviez-vous ?
+                        </h4>
+                        <p id="loop-tip" class="text-sm opacity-90 leading-relaxed">
+                            La boucle <strong>for</strong> est parfaite quand vous connaissez exactement le nombre
+                            d'itérations grâce à son itérateur intégré.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Visual Code Panel -->
+                <div class="xl:col-span-8 space-y-6">
+                    <!-- Code Block -->
+                    <div class="bg-slate-900 rounded-2xl p-6 shadow-2xl relative overflow-hidden">
+                        <div class="flex gap-2 mb-6">
+                            <div class="w-3 h-3 rounded-full bg-slate-700"></div>
+                            <div class="w-3 h-3 rounded-full bg-slate-700"></div>
+                            <div class="w-3 h-3 rounded-full bg-slate-700"></div>
+                        </div>
+
+                        <div id="code-display" class="font-mono text-sm md:text-base text-slate-400 space-y-1">
+                            <!-- Populated by JS -->
+                        </div>
+                    </div>
+
+                    <!-- Output Console -->
+                    <div class="bg-black rounded-2xl p-6 border border-slate-800">
+                        <div class="flex justify-between items-center mb-4">
+                            <span class="text-xs font-bold text-slate-500 uppercase tracking-widest">Console de
+                                Sortie</span>
+                            <div class="flex gap-1">
+                                <div class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
+                            </div>
+                        </div>
+                        <div id="console-output"
+                            class="h-40 overflow-y-auto font-mono text-green-400 text-sm space-y-1 custom-scroll">
+                            <div class="opacity-50 italic">// Initialisation de la simulation...</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 5: OPERATORS -->
+        <section id="operators" class="section-content hidden">
+            <header class="mb-10 border-b border-slate-200 pb-6">
+                <h2 class="text-3xl md:text-4xl font-bold text-slate-800 mb-4">Opérateurs Communs</h2>
+                <p class="text-lg text-slate-600 max-w-3xl">
+                    Les fondations des calculs et de la logique. Explorez la table de vérité pour les opérateurs
+                    logiques.
+                </p>
+            </header>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- Logic Gates Visualization -->
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                    <h3 class="font-bold text-lg mb-4 text-slate-800">Simulateur Logique (AND / OR)</h3>
+
+                    <div class="flex items-center justify-center space-x-4 mb-8 bg-slate-50 p-6 rounded-lg">
+                        <button id="op-a" onclick="toggleBool('op-a')"
+                            class="w-16 h-16 rounded flex items-center justify-center font-bold text-white transition-all bg-red-500">FALSE</button>
+
+                        <select id="op-logic"
+                            class="bg-white border border-slate-300 rounded px-2 py-1 font-mono font-bold text-lg"
+                            title="selection d'opérateur logique" onchange="updateLogicGate()">
+                            <option value="&&">&& (ET)</option>
+                            <option value="||">|| (OU)</option>
+                            <option value="^">^ (OU exclusif)</option>
+                        </select>
+
+                        <button id="op-b" onclick="toggleBool('op-b')"
+                            class="w-16 h-16 rounded flex items-center justify-center font-bold text-white transition-all bg-red-500">FALSE</button>
+
+                        <div class="text-2xl font-bold text-slate-400">=</div>
+
+                        <div id="op-result"
+                            class="w-20 h-20 rounded-full border-4 flex items-center justify-center font-bold transition-all border-red-500 text-red-500 bg-white shadow-inner">
+                            FALSE
+                        </div>
+                    </div>
+                    <p class="text-sm text-slate-500 text-center">Cliquez sur les carrés rouges/verts pour changer leur
+                        valeur.</p>
+                </div>
+
+                <!-- Reference Lists -->
+                <div class="space-y-6">
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                        <h4 class="font-bold text-slate-800 mb-3 border-b border-slate-100 pb-2">➕ Arithmétiques</h4>
+                        <div class="grid grid-cols-5 gap-2 text-center font-mono text-sm">
+                            <div class="bg-slate-50 p-2 rounded text-violet-600 font-bold">+</div>
+                            <div class="bg-slate-50 p-2 rounded text-violet-600 font-bold">-</div>
+                            <div class="bg-slate-50 p-2 rounded text-violet-600 font-bold">*</div>
+                            <div class="bg-slate-50 p-2 rounded text-violet-600 font-bold">/</div>
+                            <div class="bg-slate-50 p-2 rounded text-violet-600 font-bold">%</div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                        <h4 class="font-bold text-slate-800 mb-3 border-b border-slate-100 pb-2">⚖️ Comparaison</h4>
+                        <div class="grid grid-cols-3 gap-2 text-center font-mono text-sm">
+                            <div class="bg-slate-50 p-2 rounded" title="Égal">==</div>
+                            <div class="bg-slate-50 p-2 rounded" title="Différent">!=</div>
+                            <div class="bg-slate-50 p-2 rounded"> / </div>
+                        </div>
+                        <p class="text-xs text-slate-500 mt-2">Attention : <code
+                                style="background-color:darksalmon;">=</code> assigne, <code
+                                style="background-color: darksalmon;">==</code>
+                            compare.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        // --- GESTION DU MENU MOBILE ---
+        function toggleMenu() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('menu-overlay');
+            const icon = document.getElementById('menu-icon');
+
+            const isOpen = !sidebar.classList.contains('-translate-x-full');
+
+            if (isOpen) {
+                sidebar.classList.add('-translate-x-full');
+                overlay.style.display = 'none';
+                icon.innerText = '☰';
+            } else {
+                sidebar.classList.remove('-translate-x-full');
+                overlay.style.display = 'block';
+                icon.innerText = '✕';
+            }
+        }
+
+        // --- NAVIGATION STATE MANAGEMENT ---
+        // --- NAVIGATION ---
+        function showSection(id) {
+            document.querySelectorAll('.section-content').forEach(s => s.classList.add('hidden'));
+            document.getElementById(id).classList.remove('hidden');
+
+            document.querySelectorAll('.nav-item').forEach(b => {
+                b.classList.remove('active');
+                if (b.onclick.toString().includes(id)) b.classList.add('active');
+            });
+
+            if (window.innerWidth < 768) toggleMenu(); // Ferme le menu après sélection sur mobile
+
+            if (id === 'types') renderChart();
+        }
+
+
+        // --- SECTION 2: TYPES VISUALIZATION ---
+        let typesChartInstance = null;
+
+        function toggleTypeInfo(type) {
+            document.getElementById('info-value').classList.add('hidden');
+            document.getElementById('info-reference').classList.add('hidden');
+            document.getElementById('btn-value').classList.remove('bg-violet-600', 'text-white');
+            document.getElementById('btn-value').classList.add('bg-slate-100', 'text-slate-600');
+            document.getElementById('btn-reference').classList.remove('bg-violet-600', 'text-white');
+            document.getElementById('btn-reference').classList.add('bg-slate-100', 'text-slate-600');
+
+            if (type === 'value') {
+                document.getElementById('info-value').classList.remove('hidden');
+                document.getElementById('btn-value').classList.add('bg-violet-600', 'text-white');
+                document.getElementById('btn-value').classList.remove('bg-slate-100', 'text-slate-600');
+            } else {
+                document.getElementById('info-reference').classList.remove('hidden');
+                document.getElementById('btn-reference').classList.add('bg-violet-600', 'text-white');
+                document.getElementById('btn-reference').classList.remove('bg-slate-100', 'text-slate-600');
+            }
+        }
+
+        function renderTypesChart() {
+            if (typesChartInstance) return; // Prevent re-render
+
+            const ctx = document.getElementById('typesChart').getContext('2d');
+
+            typesChartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['bool (8*)', 'int (32)', 'float (32)', 'long (64)', 'double (64)', 'decimal (128)'],
+                    datasets: [{
+                        label: 'Taille en Bits',
+                        data: [8, 32, 32, 64, 64, 128],
+                        backgroundColor: [
+                            '#cbd5e1', // Slate 300
+                            '#8b5cf6', // Violet 500
+                            '#8b5cf6',
+                            '#7c3aed', // Violet 600
+                            '#7c3aed',
+                            '#4c1d95'  // Violet 900
+                        ],
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function (context) {
+                                    return context.raw + ' bits';
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: { display: true, text: 'Bits' }
+                        }
+                    }
+                }
+            });
+        }
+
+
+        // --- SECTION 3: LOGIC SIMULATOR ---
+        function switchLogicTab(mode) {
+            document.getElementById('playground-if').classList.add('hidden');
+            document.getElementById('playground-switch').classList.add('hidden');
+            document.getElementById('playground-if').classList.remove('contents');
+            document.getElementById('playground-switch').classList.remove('contents');
+
+            // Button Styles
+            const btnIf = document.getElementById('tab-if');
+            const btnSw = document.getElementById('tab-switch');
+
+            if (mode === 'if') {
+                document.getElementById('playground-if').classList.remove('hidden');
+                document.getElementById('playground-if').classList.add('contents');
+
+                btnIf.classList.add('bg-violet-600', 'text-white', 'border-violet-600');
+                btnIf.classList.remove('bg-white', 'text-slate-700', 'border-slate-300');
+                btnSw.classList.remove('bg-violet-600', 'text-white', 'border-violet-600');
+                btnSw.classList.add('bg-white', 'text-slate-700', 'border-slate-300');
+
+                updateIfLogic();
+            } else {
+                document.getElementById('playground-switch').classList.remove('hidden');
+                document.getElementById('playground-switch').classList.add('contents');
+
+                btnSw.classList.add('bg-violet-600', 'text-white', 'border-violet-600');
+                btnSw.classList.remove('bg-white', 'text-slate-700', 'border-slate-300');
+                btnIf.classList.remove('bg-violet-600', 'text-white', 'border-violet-600');
+                btnIf.classList.add('bg-white', 'text-slate-700', 'border-slate-300');
+
+                updateSwitchLogic();
+            }
+        }
+
+        function clearHighlights(prefix) {
+            document.querySelectorAll(`[id^="${prefix}"]`).forEach(el => {
+                el.classList.remove('code-active');
+            });
+        }
+
+        function updateIfLogic() {
+            const score = parseInt(document.getElementById('input-score').value) || 0;
+            document.getElementById('code-score-val').innerText = score;
+
+            clearHighlights('line-if-');
+
+            // Feedback Text
+            const fb = document.getElementById('score-feedback');
+
+            // Logic highlighting
+            document.getElementById('line-if-1').classList.add('code-active'); // Init always runs
+            document.getElementById('line-if-2').classList.add('code-active'); // First check always runs
+
+            if (score >= 90) {
+                document.getElementById('line-if-3').classList.add('code-active');
+                fb.innerText = "Excellent !";
+                fb.className = "text-2xl font-bold text-emerald-600";
+            } else {
+                document.getElementById('line-if-4').classList.add('code-active'); // Check else if
+                if (score >= 70) {
+                    document.getElementById('line-if-5').classList.add('code-active');
+                    fb.innerText = "Bien joué !";
+                    fb.className = "text-2xl font-bold text-violet-600";
+                } else {
+                    document.getElementById('line-if-6').classList.add('code-active'); // Else
+                    document.getElementById('line-if-7').classList.add('code-active');
+                    fb.innerText = "À améliorer.";
+                    fb.className = "text-2xl font-bold text-slate-500";
+                }
+            }
+            document.getElementById('line-if-8').classList.add('code-active');
+        }
+
+        function updateSwitchLogic() {
+            const role = document.getElementById('input-role').value;
+            document.getElementById('code-role-val').innerText = `"${role}"`;
+
+            clearHighlights('line-sw-');
+
+            document.getElementById('line-sw-1').classList.add('code-active');
+            document.getElementById('line-sw-2').classList.add('code-active');
+
+            if (role === 'Admin') {
+                document.getElementById('line-sw-3').classList.add('code-active');
+                document.getElementById('line-sw-4').classList.add('code-active');
+                document.getElementById('line-sw-5').classList.add('code-active');
+            } else if (role === 'User') {
+                document.getElementById('line-sw-6').classList.add('code-active');
+                document.getElementById('line-sw-7').classList.add('code-active');
+                document.getElementById('line-sw-8').classList.add('code-active');
+            } else {
+                document.getElementById('line-sw-9').classList.add('code-active');
+                document.getElementById('line-sw-10').classList.add('code-active');
+                document.getElementById('line-sw-11').classList.add('code-active');
+            }
+            document.getElementById('line-sw-12').classList.add('code-active');
+        }
+
+
+        // --- SECTION 4: LOOP VISUALIZER ---
+        const loopConfigs = {
+            for: {
+                varName: 'i',
+                tip: "La boucle <strong>for</strong> regroupe initialisation, condition et incrémentation sur une seule ligne.",
+                lines: [
+                    { id: 'l1', text: '<span class="text-pink-400">for</span> (<span class="text-violet-400">int</span> i = 0; i < 3; i++)' },
+                    { id: 'l2', text: '{' },
+                    { id: 'l3', text: '    Console.WriteLine(<span class="text-amber-300">"Index : "</span> + i);', isBody: true },
+                    { id: 'l4', text: '}' }
+                ],
+                steps: [
+                    { line: 'l1', val: 0, cond: 'TRUE' },
+                    { line: 'l3', val: 0, cond: 'TRUE', log: "Index : 0" },
+                    { line: 'l1', val: 1, cond: 'TRUE' },
+                    { line: 'l3', val: 1, cond: 'TRUE', log: "Index : 1" },
+                    { line: 'l1', val: 2, cond: 'TRUE' },
+                    { line: 'l3', val: 2, cond: 'TRUE', log: "Index : 2" },
+                    { line: 'l1', val: 3, cond: 'FALSE' },
+                    { line: 'l4', val: 3, cond: 'STOP' }
+                ]
+            },
+            while: {
+                varName: 'n',
+                tip: "La boucle <strong>while</strong> vérifie la condition <em>avant</em> chaque itération. Si elle est fausse dès le début, le code ne s'exécute jamais.",
+                lines: [
+                    { id: 'l1', text: '<span class="text-violet-400">int</span> n = 0;' },
+                    { id: 'l2', text: '<span class="text-pink-400">while</span> (n < 2)' },
+                    { id: 'l3', text: '{' },
+                    { id: 'l4', text: '    Console.WriteLine(<span class="text-amber-300">"Valeur : "</span> + n);', isBody: true },
+                    { id: 'l5', text: '    n++;' },
+                    { id: 'l6', text: '}' }
+                ],
+                steps: [
+                    { line: 'l1', val: 0, cond: 'INIT' },
+                    { line: 'l2', val: 0, cond: 'TRUE' },
+                    { line: 'l4', val: 0, cond: 'TRUE', log: "Valeur : 0" },
+                    { line: 'l5', val: 1, cond: 'TRUE' },
+                    { line: 'l2', val: 1, cond: 'TRUE' },
+                    { line: 'l4', val: 1, cond: 'TRUE', log: "Valeur : 1" },
+                    { line: 'l5', val: 2, cond: 'TRUE' },
+                    { line: 'l2', val: 2, cond: 'FALSE' },
+                    { line: 'l6', val: 2, cond: 'STOP' }
+                ]
+            },
+            dowhile: {
+                varName: 'x',
+                tip: "La boucle <strong>do-while</strong> garantit au moins une exécution car la condition est vérifiée <em>à la fin</em>.",
+                lines: [
+                    { id: 'l1', text: '<span class="text-violet-400">int</span> x = 0;' },
+                    { id: 'l2', text: '<span class="text-pink-400">do</span>' },
+                    { id: 'l3', text: '{' },
+                    { id: 'l4', text: '    Console.WriteLine(<span class="text-amber-300">"Traitement"</span>);', isBody: true },
+                    { id: 'l5', text: '    x++;' },
+                    { id: 'l6', text: '} <span class="text-pink-400">while</span> (x < 1);' }
+                ],
+                steps: [
+                    { line: 'l1', val: 0, cond: 'INIT' },
+                    { line: 'l2', val: 0, cond: 'DO' },
+                    { line: 'l4', val: 0, cond: 'TRUE', log: "Traitement" },
+                    { line: 'l5', val: 1, cond: 'TRUE' },
+                    { line: 'l6', val: 1, cond: 'FALSE' }
+                ]
+            },
+            foreach: {
+                varName: 'item',
+                tip: "La boucle <strong>foreach</strong> est la plus sûre pour parcourir des collections (tableaux, listes) sans gérer d'index.",
+                lines: [
+                    { id: 'l1', text: '<span class="text-violet-400">string</span>[] fruits = { <span class="text-amber-300">"Pomme"</span>, <span class="text-amber-300">"Banane"</span> };' },
+                    { id: 'l2', text: '<span class="text-pink-400">foreach</span> (<span class="text-violet-400">var</span> fruit <span class="text-pink-400">in</span> fruits)' },
+                    { id: 'l3', text: '{' },
+                    { id: 'l4', text: '    Console.WriteLine(fruit);', isBody: true },
+                    { id: 'l5', text: '}' }
+                ],
+                steps: [
+                    { line: 'l1', val: 'None', cond: 'INIT' },
+                    { line: 'l2', val: '"Pomme"', cond: 'TRUE' },
+                    { line: 'l4', val: '"Pomme"', cond: 'TRUE', log: "Pomme" },
+                    { line: 'l2', val: '"Banane"', cond: 'TRUE' },
+                    { line: 'l4', val: '"Banane"', cond: 'TRUE', log: "Banane" },
+                    { line: 'l2', val: 'End', cond: 'FALSE' },
+                    { line: 'l5', val: 'End', cond: 'STOP' }
+                ]
+            }
+        };
+
+        let currentLoopType = 'for';
+        let currentStepIndex = -1;
+
+        function selectLoopType(type) {
+            currentLoopType = type;
+
+            // Update UI Tabs
+            document.querySelectorAll('.loop-tab').forEach(b => {
+                b.classList.replace('bg-violet-600', 'bg-white');
+                b.classList.replace('text-white', 'text-slate-600');
+                b.classList.add('border-slate-200');
+            });
+            const activeBtn = document.getElementById(`btn-${type}`);
+            activeBtn.classList.replace('bg-white', 'bg-violet-600');
+            activeBtn.classList.replace('text-slate-600', 'text-white');
+
+            resetLoopSimulation();
+        }
+
+        function resetLoopSimulation() {
+            currentStepIndex = -1;
+            const config = loopConfigs[currentLoopType];
+
+            // UI Reset
+            document.getElementById('loop-var-name').innerText = config.varName;
+            document.getElementById('loop-var-value').innerText = config.steps[0].val;
+            document.getElementById('loop-tip').innerHTML = config.tip;
+            document.getElementById('console-output').innerHTML = '<div class="opacity-50 italic">// Simulation réinitialisée...</div>';
+
+            const condBox = document.getElementById('loop-condition-box');
+            condBox.innerText = "STANDBY";
+            condBox.className = "mt-2 py-2 px-4 rounded-lg bg-slate-100 text-slate-500 font-bold text-center border border-slate-200";
+
+            // Render Code
+            const codeDisplay = document.getElementById('code-display');
+            codeDisplay.innerHTML = '';
+            config.lines.forEach(line => {
+                const div = document.createElement('div');
+                div.id = line.id;
+                div.className = 'code-line';
+                div.innerHTML = line.text;
+                codeDisplay.appendChild(div);
+            });
+        }
+
+        function executeLoopStep() {
+            const config = loopConfigs[currentLoopType];
+            currentStepIndex++;
+
+            if (currentStepIndex >= config.steps.length) {
+                const consoleDiv = document.getElementById('console-output');
+                consoleDiv.innerHTML += '<div class="text-violet-400 font-bold">--- Fin du programme ---</div>';
+                return;
+            }
+
+            const step = config.steps[currentStepIndex];
+
+            // Update Highlights
+            document.querySelectorAll('.code-line').forEach(l => l.classList.remove('code-active'));
+            document.getElementById(step.line).classList.add('code-active');
+
+            // Update Var & Condition
+            document.getElementById('loop-var-value').innerText = step.val;
+
+            const condBox = document.getElementById('loop-condition-box');
+            if (step.cond === 'TRUE') {
+                condBox.innerText = "CONDITION: TRUE";
+                condBox.className = "mt-2 py-2 px-4 rounded-lg bg-emerald-100 text-emerald-700 font-bold text-center border border-emerald-200";
+            } else if (step.cond === 'FALSE' || step.cond === 'STOP') {
+                condBox.innerText = "CONDITION: FALSE";
+                condBox.className = "mt-2 py-2 px-4 rounded-lg bg-red-100 text-red-700 font-bold text-center border border-red-200";
+            } else {
+                condBox.innerText = step.cond;
+                condBox.className = "mt-2 py-2 px-4 rounded-lg bg-blue-100 text-blue-700 font-bold text-center border border-blue-200";
+            }
+
+            // Update Console
+            if (step.log) {
+                const consoleDiv = document.getElementById('console-output');
+                consoleDiv.innerHTML += `<div><span class="text-slate-500">></span> ${step.log}</div>`;
+                consoleDiv.scrollTop = consoleDiv.scrollHeight;
+            }
+        }
+
+        // Initialize default
+        window.onload = () => selectLoopType('for');
+
+        // --- SECTION 5: OPERATORS (LOGIC GATE) ---
+        let boolA = false;
+        let boolB = false;
+
+        function toggleBool(id) {
+            if (id === 'op-a') boolA = !boolA;
+            if (id === 'op-b') boolB = !boolB;
+
+            const el = document.getElementById(id);
+            const val = id === 'op-a' ? boolA : boolB;
+
+            if (val) {
+                el.classList.remove('bg-red-500');
+                el.classList.add('bg-emerald-500');
+                el.innerText = 'TRUE';
+            } else {
+                el.classList.remove('bg-emerald-500');
+                el.classList.add('bg-red-500');
+                el.innerText = 'FALSE';
+            }
+            updateLogicGate();
+        }
+
+        function updateLogicGate() {
+            const op = document.getElementById('op-logic').value;
+            let res = false;
+
+            if (op === '&&') res = boolA && boolB;
+            if (op === '||') res = boolA || boolB;
+            if (op === '^') res = boolA ^ boolB;
+
+            const resEl = document.getElementById('op-result');
+            if (res) {
+                resEl.innerText = "TRUE";
+                resEl.className = "w-20 h-20 rounded-full border-4 flex items-center justify-center font-bold transition-all border-emerald-500 text-emerald-500 bg-white shadow-inner scale-110";
+            } else {
+                resEl.innerText = "FALSE";
+                resEl.className = "w-20 h-20 rounded-full border-4 flex items-center justify-center font-bold transition-all border-red-500 text-red-500 bg-white shadow-inner";
+            }
+        }
+
+        // Initialize
+        updateIfLogic();
+
+    </script>
+</body>
+
+</html>
