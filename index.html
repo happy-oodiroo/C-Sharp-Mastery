@@ -286,6 +286,11 @@
                                             <td class="font-mono bg-slate-50 rounded px-1">3.14</td>
                                         </tr>
                                         <tr>
+                                            <td class="px-4 py-2 font-mono text-violet-600">decimal</td>
+                                            <td>Décimal haute précision (finance/monnaie)</td>
+                                            <td class="font-mono bg-slate-50 rounded px-1">123.456m</td>
+                                        </tr>
+                                        <tr>
                                             <td class="px-4 py-2 font-mono text-violet-600">bool</td>
                                             <td>Logique</td>
                                             <td class="font-mono bg-slate-50 rounded px-1">true</td>
@@ -675,7 +680,7 @@
 
             if (window.innerWidth < 768) toggleMenu(); // Ferme le menu après sélection sur mobile
 
-            if (id === 'types') renderChart();
+            if (id === 'types') renderTypesChart();
         }
 
 
